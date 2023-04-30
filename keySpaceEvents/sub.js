@@ -1,11 +1,12 @@
 const redis = require('redis');
 
+const port = 6379
+const client = redis.createClient(port);
+
+
 (async () => {
-  const port = 6379
-  const client = redis.createClient(port);
 
   await client.connect();
-
   await client.configSet("notify-keyspace-events", "KEh");
   console.log("configget",await client.configGet("notify-keyspace-events"))
 
