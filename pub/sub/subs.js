@@ -8,8 +8,8 @@ const redis = require('redis');
 
   await subscriber.connect();
 
-  await subscriber.subscribe('article', (message) => {
-    console.log("message----",JSON.parse(message)); // 'message'
+  await subscriber.subscribe('second', (message) => {
+    console.log("message----",{message}); // 'message'
   });
 
 })();
