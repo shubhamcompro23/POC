@@ -5,7 +5,7 @@ client.connect();
 client.on('connect', () => console.log('connect to redis server'));
 
 (async() =>{
-    // await client.set("username", "shubham saini");
-
-    // console.log("getrange---", await client.GETRANGE("username", "0", "7"))
+    await client.SADD("mylist", ["IPHONE", "laptop"]);
+    console.log("smembers",await client.SMEMBERS('mylist'))
+    console.log("ismembers",await client.SISMEMBER('mylist',"laptop"))
 })()
