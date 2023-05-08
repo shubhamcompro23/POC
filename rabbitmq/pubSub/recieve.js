@@ -8,7 +8,7 @@ const recieveMsg = async () => {
   await channel.assertExchange(exchangeName, 'fanout', {durable: false});
   const q = await channel.assertQueue('', {exclusive: true});
   console.log(`Waiting for messages in queue: ${q.queue}`);
-  channel.bindQueue(q.queue, exchangeName, '');
+  channel.bindQueue(q.queue, exchangeName, ''); // queuename , exchangename, routing
   channel.consume(q.queue, msg => {
     if(msg.content) console.log("THe message is: ", msg.content.toString());
   }, {noAck: true})
