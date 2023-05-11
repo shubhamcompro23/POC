@@ -1,53 +1,16 @@
-const { DynamoDBClient, TransactGetItemsCommand } = require("@aws-sdk/client-dynamodb");
-
-// Set the AWS Region.
-const REGION = "local";
-
-// Create an Amazon DynamoDB service client object.
-const DB = new DynamoDBClient({ region: REGION });
-
-// Set the parameters.
-
-const params = { 
-    TransactItems: [ 
-      { 
-        Get: { 
-          Key: { 
-            "Season": {
-              N: "1",
-            },
-            "Episode": {
-                N: "1"
-            }
-          },
-          TableName: "TEST_TABLE",
-        },
-      },
-      { 
-        Get: { 
-          Key: { 
-            "Season": {
-              N: "1",
-            },
-            "Episode": {
-                N: "2"
-            }
-          },
-          TableName: "TEST_TABLE",
-        },
-      },
-    ],
-};
+const db = require("../db")
 
 
-const run = async () => {
+async function transactGetItems(params) {
     try {
-      const data = await DB.send(new TransactGetItemsCommand(params));
-      console.log("Success Data", data.Responses);
+      const data = await db.dynamodb.transactGetItems(params).promise()
+      return data
     } catch (err) {
-      console.log("Error", err.stack);
+      return err.stack
     }
 };
 
 
-run();
+module.exports = {
+  transactGetItems
+}

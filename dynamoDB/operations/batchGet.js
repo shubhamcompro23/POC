@@ -1,55 +1,16 @@
-const { DynamoDBClient, BatchGetItemCommand } = require("@aws-sdk/client-dynamodb");
-
-// Set the AWS Region.
-const REGION = "local";
-
-// Create an Amazon DynamoDB service client object.
-const DB = new DynamoDBClient({ region: REGION });
-
-// Set the parameters.
-const params = {
-    "RequestItems": {
-      "TEST_TABLE": {
-        "Keys": [
-          {
-            "Season": {
-              "N": "1"
-            },
-            "Episode": {
-              "N": "1"
-            }
-          },
-          {
-            "Season": {
-              "N": "2"
-            },
-            "Episode": {
-              "N": "1"
-            }
-          },
-          {
-            "Season": {
-              "N": "3"
-            },
-            "Episode": {
-              "N": "3"
-            }
-          },
-        ],
-        // "ProjectionExpression": "Season"
-      }
-    }
-};
+const db = require("../db")
 
 
-const batchGet = async () => {
+async function batchGet(params){
     try {
-      const data = await DB.send(new BatchGetItemCommand(params));
-      console.log("Data -", data.Responses.TEST_TABLE);
+      const data = await db.dynamodb.batchGetItem(params).promise()
+      return data
     } catch (err) {
-      console.log("Error", err.stack);
+      return err.stack
     }
 };
 
 
-batchGet();
+module.exports = {
+  batchGet
+}

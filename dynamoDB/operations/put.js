@@ -1,59 +1,34 @@
-// const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
+const db = require("../db")
 
-// // Set the AWS Region.
-// const REGION = "local";
+async function put(table, item, ConditionExpression){
 
-// // Create an Amazon DynamoDB service client object.
-// const DB = new DynamoDBClient({ region: REGION });
+  try{
+    const params = {
+      TableName: table,
+      Item: item,
+      ReturnValues: "ALL_OLD",
+    };
+    if(ConditionExpression){
+      params.ConditionExpression = ConditionExpression
+    }
 
+    console.log("params", params)
+  
+    const data = await db.dynamodb.putItem(params).promise()
 
-// // Set the parameters.
-// const params = {
-//     TableName: "TEST_TABLE",
-//     Item: {
-//       "Season": {N: "5"},
-//       "Episode": {N: "1"},
-//       "Description": {S: "Season Finale"}
-//     },
-// };
+    console.log("data---", JSON.stringify(data,0,2))
 
-// const putItem = async () => {
-//     try {
-//       const data = await DB.send(new PutItemCommand(params));
-//       console.log("Success - item added", data);
-//     } catch (err) {
-//       console.log("Error", err.stack);
-//     }
-// };
-
-
-// putItem();
-
-
-const AWS = require("aws-sdk")
-
-AWS.config.update({
-  region: "local",
-  endpoint: "http://localhost:8000"
-});
-
-
-const dynamodb = new AWS.DynamoDB();
-
-const params = {
-  TableName: "TEST_TABLE",
-  Item: {
-    "Season": {N: "5"},
-    "Episode": {N: "4"},
-    "Description": {S: "This is new episode"},
-    
-  },
-};
-
-dynamodb.putItem(params,(err, data)=>{
-  if (err) {
-    console.error("Error JSON.", JSON.stringify(err, null, 2));
-  } else {
-    console.log("Data-", data);
+    return "successfully create new record"
+  }catch(err){
+    if(err.code  === 'ConditionalCheckFailedException'){
+      return "Item with userId and sortKey already exists"
+    }
+    console.error("Error JSON.",err);
   }
-})
+
+}
+
+
+module.exports = {
+  put
+};

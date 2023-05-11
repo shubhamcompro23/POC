@@ -1,38 +1,21 @@
-const AWS = require("aws-sdk")
+const db = require("../db")
 
-AWS.config.update({
-    region: "local",
-    endpoint: "http://localhost:8000"
-})
+async function updateOperation(params){
+  try{
+    
+  
+    const data = await db.dynamodb.updateItem(params).promise()
 
-const dynamodb = new AWS.DynamoDB()
+    return data
 
-const params = {
-    // ExpressionAttributeNames: {
-    //  "Description": "Description"
-    // }, 
-    ExpressionAttributeValues: {
-      ":Description": {
-        S: "Updated Episode2"
-       },
-    }, 
-    Key: {
-     "Season": {
-       N: "5"
-      }, 
-     "Episode": {
-       N: "4"
-      }
-    }, 
-    ReturnValues: "ALL_NEW", // UPDATED_NEW,UPDATED_OLD,ALL_OLD, NONE
-    TableName: "TEST_TABLE", 
-    UpdateExpression: "Set Description= :Description"
-};
-
-dynamodb.updateItem(params, (err,data)=>{
-    if(err){
-        console.log("error stack---", err)
-    }else{
-        console.log("updated Item---", data)
+  }catch(err){
+    console.log("error---", err.stack)
+    if(err.code  === 'ConditionalCheckFailedException'){
+      return "Item with these Season and Episode values is not exists"
     }
-})
+  }
+}
+
+module.exports = {
+  updateOperation
+}
